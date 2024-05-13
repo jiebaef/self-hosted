@@ -98,7 +98,7 @@ services:
     restart: unless-stopped
 
   readarr:
-    image: lscr.io/linuxserver/readarr:develop
+    image: lscr.io/linuxserver/readarr:latest
     container_name: readarr
     environment:
       - PUID=${PUID}
@@ -107,4 +107,4 @@ services:
     volumes:
       - ./config/readarr:/config
       - /mnt/files/Mediaserver:/mediaserver
-    restart: unless-stopped
+   restart: unless-stopped
