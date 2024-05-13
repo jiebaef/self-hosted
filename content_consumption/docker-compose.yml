@@ -1,0 +1,32 @@
+networks:
+  hosting:
+    external: true
+
+services:
+  audiobookshelf:
+    image: ghcr.io/advplyr/audiobookshelf:latest
+    container_name: audiobookshelf
+    restart: unless-stopped
+    volumes:
+      - /mnt/files/Mediaserver/Audiobooks:/audiobooks
+      - /mnt/files/Mediaserver/Podcasts:/podcasts
+      - ./configs/audiobookshelf:/config
+      - ./data/audiobookshelf:/metadata
+    environment:
+      - TZ=Europe/Berlin
+    networks:
+      - hosting
+
+  kavita:
+    image: lscr.io/linuxserver/kavita:latest
+    container_name: kavita
+    restart: unless-stopped
+    volumes:
+      - ./configs/kavita:/config
+      - /mnt/files/Mediaserver/:/media
+    environment:
+      - PUID=1000
+      - GUID=1000
+      - TZ=Europe/Berlin
+    networks:
+      - hosting

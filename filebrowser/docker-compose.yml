@@ -1,0 +1,23 @@
+networks:
+  hosting:
+    external: true
+
+services:
+  filebrowser:
+    image: filebrowser/filebrowser:latest
+    container_name: filebrowser
+    restart: unless-stopped
+    # ports:
+    #   - 8888:80
+    environment:
+      - PUID=1000
+      - PGID=1000
+    volumes:
+      - /mnt/files/Mediaserver/Anime:/srv/Anime
+      - /mnt/files/Mediaserver/Movies:/srv/Movies
+      - /mnt/files/Mediaserver/Shows:/srv/Shows
+      - ./data/torrents:/srv/Torrents
+      - ./config/filebrowser/settings.json:/config/settings.json
+      - ./data/filebrowser/filebrowser.db:/database/filebrowser.db
+    networks:
+      - hosting

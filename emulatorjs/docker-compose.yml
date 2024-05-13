@@ -1,0 +1,22 @@
+networks:
+  hosting:
+    external: true
+
+services:
+  emulatorjs:
+    image: lscr.io/linuxserver/emulatorjs:latest
+    container_name: emulatorjs
+    restart: unless-stopped
+    ports:
+      - 3000:3000 # file management
+      - 80:80 # gaming
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Europe/Berlin
+    volumes:
+      - ./config/emulatorjs:/config
+      # - ./data/emulatorjs:/data
+      - /mnt/files/docker_data/emulatorjs:/data
+    networks:
+      - hosting

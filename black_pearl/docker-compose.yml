@@ -1,0 +1,45 @@
+services:
+  gluetun:
+    image: qmcgaw/gluetun
+    container_name: gluetun
+    cap_add:
+      - NET_ADMIN
+    devices:
+      - /dev/net/tun:/dev/net/tun
+    restart: unless-stopped
+    ports:
+      - ${QBIT_TORRENTING_PORT}:${QBIT_TORRENTING_PORT}/tcp
+      - ${QBIT_TORRENTING_PORT}:${QBIT_TORRENTING_PORT}/udp
+      - ${QBIT_WEBUI_PORT}:${QBIT_WEBUI_PORT}
+      # - 9117:9117 # Jackett
+      # - 8989:8989 # Sonarr
+      # - 9696:9696 # Prowlarr
+    volumes:
+      - ./config/gluetun:/gluetun
+    environment:
+      - TZ=${TZ}
+      - VPN_SERVICE_PROVIDER=${GLUETUN_VPN_SERVICE_PROVIDER}
+      - VPN_TYPE=${GLUETUN_VPN_TYPE}
+      - WIREGUARD_PRIVATE_KEY=${GLUETUN_WIREGUARD_PRIVATE_KEY}
+      - WIREGUARD_PRESHARED_KEY=${GLUETUN_WIREGUARD_PRESHARED_KEY}
+      - WIREGUARD_ADDRESSES=${GLUETUN_WIREGUARD_ADDRESSES}
+      - SERVER_COUNTRIES=${GLUETUN_SERVER_COUNTRIES}
+      - FIREWALL_OUTBOUND_SUBNETS=${GLUETUN_FIREWALL_OUTBOUND_SUBNETS}
+
+  qbittorrent:
+    image: lscr.io/linuxserver/qbittorrent
+    container_name: qbittorrent
+    network_mode: "service:gluetun"
+    restart: unless-stopped
+    environment:
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - TZ=${TZ}
+      - WEBUI_PORT=${QBIT_WEBUI_PORT}
+      - TORRENTING_PORT=${QBIT_TORRENTING_PORT}
+    volumes:
+      - ./config/qbittorrent:/config
+      - /mnt/files/Mediaserver:/downloads
+      - /mnt/files/Mediaserver/torrents:/torrents
+    depends_on:
+      - gluetun

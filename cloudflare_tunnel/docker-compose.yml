@@ -1,0 +1,14 @@
+networks:
+  hosting:
+    external: true
+
+services:
+  cloudflare_tunnel:
+    image: cloudflare/cloudflared:2024.4.1
+    container_name: cloudflare_tunnel
+    restart: unless-stopped
+    environment:
+      - TUNNEL_TOKEN=$TUNNEL_TOKEN
+    command: tunnel --no-autoupdate run
+    networks:
+      - hosting
