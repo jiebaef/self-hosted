@@ -1,6 +1,6 @@
 services:
   gluetun:
-    image: qmcgaw/gluetun
+    image: qmcgaw/gluetun:latest
     container_name: gluetun
     cap_add:
       - NET_ADMIN
@@ -11,9 +11,12 @@ services:
       - ${QBIT_TORRENTING_PORT}:${QBIT_TORRENTING_PORT}/tcp
       - ${QBIT_TORRENTING_PORT}:${QBIT_TORRENTING_PORT}/udp
       - ${QBIT_WEBUI_PORT}:${QBIT_WEBUI_PORT}
-      # - 9117:9117 # Jackett
-      # - 8989:8989 # Sonarr
-      # - 9696:9696 # Prowlarr
+
+      - ${PROWLARR_WEBUI_PORT}:${PROWLARR_WEBUI_PORT}
+      - ${RADARR_WEBUI_PORT}:${RADARR_WEBUI_PORT}
+      - ${SONARR_WEBUI_PORT}:${SONARR_WEBUI_PORT}
+      - ${BAZARR_WEBUI_PORT}:${BAZARR_WEBUI_PORT}
+      - ${READARR_WEBUI_PORT}:${READARR_WEBUI_PORT}
     volumes:
       - ./config/gluetun:/gluetun
     environment:
@@ -27,7 +30,7 @@ services:
       - FIREWALL_OUTBOUND_SUBNETS=${GLUETUN_FIREWALL_OUTBOUND_SUBNETS}
 
   qbittorrent:
-    image: lscr.io/linuxserver/qbittorrent
+    image: lscr.io/linuxserver/qbittorrent:latest
     container_name: qbittorrent
     network_mode: "service:gluetun"
     restart: unless-stopped
@@ -43,3 +46,65 @@ services:
       - /mnt/files/Mediaserver/torrents:/torrents
     depends_on:
       - gluetun
+
+  # -----------------------------
+  # ARRSUITE
+  # -----------------------------
+  prowlarr:
+    image: lscr.io/linuxserver/prowlarr:latest
+    container_name: prowlarr
+    environment:
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - TZ=${TZ}
+    volumes:
+      - ./config/prowlarr:/config
+    restart: unless-stopped
+
+  radarr:
+    image: lscr.io/linuxserver/radarr:latest
+    container_name: radarr
+    environment:
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - TZ=${TZ}
+    volumes:
+      - ./config/radarr:/config
+      - /mnt/files/Mediaserver:/mediaserver
+    restart: unless-stopped
+
+  sonarr:
+    image: lscr.io/linuxserver/sonarr:latest
+    container_name: sonarr
+    environment:
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - TZ=${TZ}
+    volumes:
+      - ./config/sonarr:/config
+      - /mnt/files/Mediaserver:/mediaserver
+    restart: unless-stopped
+
+  bazarr:
+    image: lscr.io/linuxserver/bazarr:latest
+    container_name: bazarr
+    environment:
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - TZ=${TZ}
+    volumes:
+      - ./config/bazarr:/config
+      - /mnt/files/Mediaserver:/mediaserver
+    restart: unless-stopped
+
+  readarr:
+    image: lscr.io/linuxserver/readarr:develop
+    container_name: readarr
+    environment:
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - TZ=${TZ}
+    volumes:
+      - ./config/readarr:/config
+      - /mnt/files/Mediaserver:/mediaserver
+    restart: unless-stopped
