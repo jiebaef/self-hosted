@@ -76,7 +76,7 @@ services:
       - TZ=${TZ}
     volumes:
       - ./config/radarr:/config
-      - /mnt/files/Mediaserver:/mediaserver
+      - /mnt/files/Mediaserver:/downloads
     depends_on:
       - gluetun
       - qbittorrent
@@ -92,7 +92,7 @@ services:
       - TZ=${TZ}
     volumes:
       - ./config/sonarr:/config
-      - /mnt/files/Mediaserver:/mediaserver
+      - /mnt/files/Mediaserver:/downloads
     depends_on:
       - gluetun
       - qbittorrent
@@ -108,7 +108,7 @@ services:
       - TZ=${TZ}
     volumes:
       - ./config/bazarr:/config
-      - /mnt/files/Mediaserver:/mediaserver
+      - /mnt/files/Mediaserver:/downloads
     depends_on:
       - gluetun
       - qbittorrent
@@ -124,7 +124,7 @@ services:
       - TZ=${TZ}
     volumes:
       - ./config/readarr:/config
-      - /mnt/files/Mediaserver:/mediaserver
+      - /mnt/files/Mediaserver:/downloads
     depends_on:
       - gluetun
       - qbittorrent
