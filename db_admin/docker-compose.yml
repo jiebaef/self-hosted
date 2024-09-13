@@ -1,0 +1,19 @@
+networks:
+  dbs_postgres:
+    external: true
+
+services:
+  postgres_admin:
+    image: dpage/pgadmin4:latest
+    container_name: postgres_admin
+    restart: unless-stopped
+    ports:
+      - 9999:80
+    environment:
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD}
+    volumes:
+      - "./data/postgres_admin:/var/lib/pgadmin"
+    networks:
+      - dbs_postgres
+
