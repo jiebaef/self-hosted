@@ -2,6 +2,8 @@ networks:
   default:
   dbs_postgres:
     external: true
+  hosting:
+    external: true
 
 services:
   gitea:
@@ -23,6 +25,9 @@ services:
     ports:
       - 10000:3000
       - 222:22
+    networks:
+      - default
+      - hosting
     depends_on:
       - postgres_gitea
 
