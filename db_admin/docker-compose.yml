@@ -1,5 +1,9 @@
 networks:
+  reverse_proxy:
+    external: true
   dbs_postgres:
+    external: true
+  dbs_mysql:
     external: true
 
 services:
@@ -16,4 +20,13 @@ services:
       - "./data/postgres_admin:/var/lib/pgadmin"
     networks:
       - dbs_postgres
+      - reverse_proxy
 
+  mysql_admin:
+    image: adminer
+    container_name: mysql_admin
+    ports:
+      - 12080:8080
+    networks:
+      - dbs_mysql
+      - reverse_proxy
