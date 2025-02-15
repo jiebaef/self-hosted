@@ -30,7 +30,7 @@ services:
       - FIREWALL_OUTBOUND_SUBNETS=${GLUETUN_FIREWALL_OUTBOUND_SUBNETS}
 
   qbittorrent:
-    image: lscr.io/linuxserver/qbittorrent:latest
+    image: lscr.io/linuxserver/qbittorrent:5.0.1
     container_name: qbittorrent
     network_mode: "service:gluetun"
     restart: unless-stopped
@@ -50,81 +50,81 @@ services:
   # -----------------------------
   # ARRSUITE
   # -----------------------------
-  prowlarr:
-    image: lscr.io/linuxserver/prowlarr:latest
-    container_name: prowlarr
-    network_mode: "service:gluetun"
-    restart: unless-stopped
-    environment:
-      - PUID=${PUID}
-      - PGID=${PGID}
-      - TZ=${TZ}
-    volumes:
-      - ./config/prowlarr:/config
-    depends_on:
-      - gluetun
-      - qbittorrent
-
-  radarr:
-    image: lscr.io/linuxserver/radarr:latest
-    container_name: radarr
-    network_mode: "service:gluetun"
-    restart: unless-stopped
-    environment:
-      - PUID=${PUID}
-      - PGID=${PGID}
-      - TZ=${TZ}
-    volumes:
-      - ./config/radarr:/config
-      - /mnt/files/Mediaserver:/downloads
-    depends_on:
-      - gluetun
-      - qbittorrent
-
-  sonarr:
-    image: lscr.io/linuxserver/sonarr:latest
-    container_name: sonarr
-    network_mode: "service:gluetun"
-    restart: unless-stopped
-    environment:
-      - PUID=${PUID}
-      - PGID=${PGID}
-      - TZ=${TZ}
-    volumes:
-      - ./config/sonarr:/config
-      - /mnt/files/Mediaserver:/downloads
-    depends_on:
-      - gluetun
-      - qbittorrent
-
-  bazarr:
-    image: lscr.io/linuxserver/bazarr:latest
-    container_name: bazarr
-    network_mode: "service:gluetun"
-    restart: unless-stopped
-    environment:
-      - PUID=${PUID}
-      - PGID=${PGID}
-      - TZ=${TZ}
-    volumes:
-      - ./config/bazarr:/config
-      - /mnt/files/Mediaserver:/downloads
-    depends_on:
-      - gluetun
-      - qbittorrent
-
-  readarr:
-    image: lscr.io/linuxserver/readarr:develop
-    container_name: readarr
-    network_mode: "service:gluetun"
-    restart: unless-stopped
-    environment:
-      - PUID=${PUID}
-      - PGID=${PGID}
-      - TZ=${TZ}
-    volumes:
-      - ./config/readarr:/config
-      - /mnt/files/Mediaserver:/downloads
-    depends_on:
-      - gluetun
-      - qbittorrent
+  # prowlarr:
+  #   image: lscr.io/linuxserver/prowlarr:latest
+  #   container_name: prowlarr
+  #   network_mode: "service:gluetun"
+  #   restart: unless-stopped
+  #   environment:
+  #     - PUID=${PUID}
+  #     - PGID=${PGID}
+  #     - TZ=${TZ}
+  #   volumes:
+  #     - ./config/prowlarr:/config
+  #   depends_on:
+  #     - gluetun
+  #     - qbittorrent
+  #
+  # radarr:
+  #   image: lscr.io/linuxserver/radarr:latest
+  #   container_name: radarr
+  #   network_mode: "service:gluetun"
+  #   restart: unless-stopped
+  #   environment:
+  #     - PUID=${PUID}
+  #     - PGID=${PGID}
+  #     - TZ=${TZ}
+  #   volumes:
+  #     - ./config/radarr:/config
+  #     - /mnt/files/Mediaserver:/downloads
+  #   depends_on:
+  #     - gluetun
+  #     - qbittorrent
+  #
+  # sonarr:
+  #   image: lscr.io/linuxserver/sonarr:latest
+  #   container_name: sonarr
+  #   network_mode: "service:gluetun"
+  #   restart: unless-stopped
+  #   environment:
+  #     - PUID=${PUID}
+  #     - PGID=${PGID}
+  #     - TZ=${TZ}
+  #   volumes:
+  #     - ./config/sonarr:/config
+  #     - /mnt/files/Mediaserver:/downloads
+  #   depends_on:
+  #     - gluetun
+  #     - qbittorrent
+  #
+  # bazarr:
+  #   image: lscr.io/linuxserver/bazarr:latest
+  #   container_name: bazarr
+  #   network_mode: "service:gluetun"
+  #   restart: unless-stopped
+  #   environment:
+  #     - PUID=${PUID}
+  #     - PGID=${PGID}
+  #     - TZ=${TZ}
+  #   volumes:
+  #     - ./config/bazarr:/config
+  #     - /mnt/files/Mediaserver:/downloads
+  #   depends_on:
+  #     - gluetun
+  #     - qbittorrent
+  #
+  # readarr:
+  #   image: lscr.io/linuxserver/readarr:develop
+  #   container_name: readarr
+  #   network_mode: "service:gluetun"
+  #   restart: unless-stopped
+  #   environment:
+  #     - PUID=${PUID}
+  #     - PGID=${PGID}
+  #     - TZ=${TZ}
+  #   volumes:
+  #     - ./config/readarr:/config
+  #     - /mnt/files/Mediaserver:/downloads
+  #   depends_on:
+  #     - gluetun
+  #     - qbittorrent
