@@ -1,0 +1,130 @@
+# Docker Compose file for running paperless from the docker container registry.
+# This file contains everything paperless needs to run.
+# Paperless supports amd64, arm and arm64 hardware.
+#
+# All compose files of paperless configure paperless in the following way:
+#
+# - Paperless is (re)started on system boot, if it was running before shutdown.
+# - Docker volumes for storing data are managed by Docker.
+# - Folders for importing and exporting files are created in the same directory
+#   as this file and mounted to the correct folders inside the container.
+# - Paperless listens on port 8000.
+#
+# In addition to that, this Docker Compose file adds the following optional
+# configurations:
+#
+# - Instead of SQLite (default), PostgreSQL is used as the database server.
+# - Apache Tika and Gotenberg servers are started with paperless and paperless
+#   is configured to use these services. These provide support for consuming
+#   Office documents (Word, Excel, Power Point and their LibreOffice counter-
+#   parts.
+#
+# To install and update paperless with this file, do the following:
+#
+# - Copy this file as 'docker-compose.yml' and the files 'docker-compose.env'
+#   and '.env' into a folder.
+# - Run 'docker compose pull'.
+# - Run 'docker compose up -d'.
+#
+# For more extensive installation and update instructions, refer to the
+# documentation.
+networks:
+  internal:
+  dbs_postgres:
+    external: true
+  hosting:
+    external: true
+
+services:
+  broker:
+    container_name: paperless-redis
+    image: docker.io/library/redis:7
+    restart: unless-stopped
+    volumes:
+      - ./data/redis:/data
+    networks:
+      - internal
+
+  db:
+    container_name: paperless-postgres
+    image: docker.io/library/postgres:17
+    restart: unless-stopped
+    volumes:
+      - ./data/postgres:/var/lib/postgresql/data
+    environment:
+      POSTGRES_DB: ${PAPERLESS_DBNAME}
+      POSTGRES_USER: ${PAPERLESS_DBUSER}
+      POSTGRES_PASSWORD: ${PAPERLESS_DBPASS}
+    networks:
+      - internal
+      - dbs_postgres
+
+  webserver:
+    container_name: paperless-web
+    image: ghcr.io/paperless-ngx/paperless-ngx:latest
+    restart: unless-stopped
+    depends_on:
+      - db
+      - broker
+      - gotenberg
+      - tika
+    # ports:
+    #   - "8000:8000"
+    volumes:
+      - ./data/paperless/data:/usr/src/paperless/data
+      - ./data/paperless/consume:/usr/src/paperless/consume
+      - /mnt/files/docker_data/paperless/media:/usr/src/paperless/media
+      - /mnt/files/docker_data/paperless/export:/usr/src/paperless/export
+    env_file: docker-compose.env
+    environment:
+      PAPERLESS_REDIS: redis://broker:6379
+      PAPERLESS_DBHOST: db
+      PAPERLESS_DBNAME: ${PAPERLESS_DBNAME}
+      PAPERLESS_DBUSER: ${PAPERLESS_DBUSER}
+      PAPERLESS_DBPASS: ${PAPERLESS_DBPASS}
+      PAPERLESS_TIKA_ENABLED: 1
+      PAPERLESS_TIKA_GOTENBERG_ENDPOINT: http://gotenberg:3000
+      PAPERLESS_TIKA_ENDPOINT: http://tika:9998
+      PAPERLESS_APPS: allauth.socialaccount.providers.openid_connect
+      PAPERLESS_SOCIAL_ACCOUNT_SYNC_GROUPS: true
+      PAPERLESS_SOCIALACCOUNT_PROVIDERS: >
+          {
+            "openid_connect": {
+              "APPS": [
+                {
+                  "provider_id": "authentik",
+                  "name": "Authentik",
+                  "client_id": "aT59LxxijMnWVb8UBtSYOLlDFYwfS73dxfTSoXsD",
+                  "secret": "pYOKEz6C4nQY4JahACU2xCu0o1Mkq6ioTuaLsIey5DRJhZXBW9zbEAX4RTSK4hctvy445hGHhM4HgQJDgmkteWSjVyugc9aqtAYoXJWKptwRpnyRc6i7rbv3Mal6gDKP",
+                  "settings": {
+                    "server_url": "https://authentik.sh-jiebaef.xyz/application/o/paperless/.well-known/openid-configuration"
+                  }
+                }
+              ],
+              "OAUTH_PKCE_ENABLED": "True",
+              "SCOPE": [ "openid", "profile", "email", "groups" ]
+            }
+          }
+    networks:
+      - internal
+      - hosting
+
+  gotenberg:
+    container_name: paperless-gotenberg
+    image: docker.io/gotenberg/gotenberg:8.19
+    restart: unless-stopped
+    # The gotenberg chromium route is used to convert .eml files. We do not
+    # want to allow external content like tracking pixels or even javascript.
+    command:
+      - "gotenberg"
+      - "--chromium-disable-javascript=true"
+      - "--chromium-allow-list=file:///tmp/.*"
+    networks:
+      - internal
+
+  tika:
+    container_name: paperless-tika
+    image: docker.io/apache/tika:latest
+    restart: unless-stopped
+    networks:
+      - internal
