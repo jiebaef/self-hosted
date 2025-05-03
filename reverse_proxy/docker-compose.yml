@@ -1,0 +1,48 @@
+networks:
+  default:
+  dbs_mysql:
+    external: true
+  reverse_proxy:
+    external: true
+
+services:
+  nginx-reverse-proxy:
+    image: 'jc21/nginx-proxy-manager:latest'
+    container_name: nginx-reverse-proxy
+    restart: unless-stopped
+    ports:
+      - '7080:80' # Public HTTP Port
+      - '7443:443' # Public HTTPS Port
+      - '7081:81' # Admin Web Port
+      # Add any other Stream port you want to expose
+      # - '21:21' # FTP
+    environment:
+      - DB_MYSQL_HOST=nginx-db
+      - DB_MYSQL_PORT=3306
+      - DB_MYSQL_USER=${MYSQL_USER}
+      - DB_MYSQL_PASSWORD=${MYSQL_PASSWORD}
+      - DB_MYSQL_NAME=${MYSQL_DATABASE}
+    volumes:
+      - ./data/nginx/data:/data
+      - ./data/nginx/letsencrypt:/etc/letsencrypt
+    networks:
+      - default
+      - reverse_proxy
+    depends_on:
+      - nginx-db
+
+  nginx-db:
+    image: 'jc21/mariadb-aria:latest'
+    container_name: nginx-db
+    restart: unless-stopped
+    environment:
+      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+      - MYSQL_DATABASE=${MYSQL_DATABASE}
+      - MYSQL_USER=${MYSQL_USER}
+      - MYSQL_PASSWORD=${MYSQL_PASSWORD}
+      - MARIADB_AUTO_UPGRADE="1"
+    volumes:
+      - ./data/mysql:/var/lib/mysql
+    networks:
+      - default
+      - dbs_mysql
