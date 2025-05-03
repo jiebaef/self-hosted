@@ -17,6 +17,8 @@ services:
       - /mnt/files/Mediaserver/Anime:/srv/Anime
       - /mnt/files/Mediaserver/Movies:/srv/Movies
       - /mnt/files/Mediaserver/Shows:/srv/Shows
+      - /mnt/files/Filebrowser/${uni}:/srv/${uni}
+      - /mnt/files/Filebrowser/_private:/srv/_private
       - ./data/torrents:/srv/Torrents
 
       # - ./config/filebrowser/settings.json:/config/settings.json
