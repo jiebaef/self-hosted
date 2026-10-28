@@ -9,7 +9,7 @@ services:
       - "4444:80/tcp"
     environment:
       TZ: ${PIHOLE_TZ}
-      WEBPASSWORD: ${PIHOLE_PASSWORD}
+      WEBPASSWORD: ${PIHOLE_PASSWORD:?web password required}
     volumes:
       - './data/pihole/etc-pihole:/etc/pihole'
       - './data/pihole/etc-dnsmasq.d:/etc/dnsmasq.d'

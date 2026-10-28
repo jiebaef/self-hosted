@@ -12,18 +12,18 @@ services:
       - 38080:80
       - 38081:443
     environment:
-      - PUID=1000
-      - PGID=1000
+      - PUID=${PUID:-1000}
+      - PGID=${PGID:-1000}
       - APP_TIMEZONE=${TZ}
       - DISPLAY_TIMEZONE=${TZ}
-      - APP_KEY=${APP_KEY}
+      - APP_KEY=${APP_KEY:?application key required}
       - SPEEDTEST_SCHEDULE=0 5 * * *
       - DB_CONNECTION=pgsql
       - DB_HOST=speedtest_db
       - DB_PORT=5432
-      - DB_DATABASE=${PG_DB}
-      - DB_USERNAME=${PG_USER}
-      - DB_PASSWORD=${PG_PASS}
+      - DB_DATABASE=${PG_DB:?database name required}
+      - DB_USERNAME=${PG_USER:?database user required}
+      - DB_PASSWORD=${PG_PASS:?database password required}
     volumes:
       - ./config/speedtest_tracker/config:/config
       - ./config/speedtest_tracker/keys:/config/keys
@@ -38,13 +38,13 @@ services:
     container_name: speedtest_db
     environment:
       - TZ=${TZ}
-      - POSTGRES_DB=${PG_DB}
-      - POSTGRES_USER=${PG_USER}
-      - POSTGRES_PASSWORD=${PG_PASS}
+      - POSTGRES_DB=${PG_DB:?database name required}
+      - POSTGRES_USER=${PG_USER:?database user required}
+      - POSTGRES_PASSWORD=${PG_PASS:?database password required}
     volumes:
       - ./data/postgres:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
       interval: 5s
       retries: 5
       timeout: 5s

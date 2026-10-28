@@ -8,15 +8,15 @@ services:
     container_name: filebrowser
     environment:
       FILEBROWSER_CONFIG: "data/config.yaml"
-      FILEBROWSER_ADMIN_PASSWORD: ${ADMIN_PASSWORD}
-      TZ: "Europe/Berlin"
+      FILEBROWSER_ADMIN_PASSWORD: ${ADMIN_PASSWORD:?admin password required}
+      TZ: ${TZ:-Europe/Berlin}
     volumes:
-      - "/mnt/files/Filebrowser/_private:/srv/_private"
-      - "/mnt/files/Filebrowser/fhdw:/srv/fhdw"
-      - "/mnt/files/Filebrowser/users:/srv/users"
-      - "/mnt/files/Mediaserver/Anime:/srv/Media/Anime"
-      - "/mnt/files/Mediaserver/Shows:/srv/Media/Shows"
-      - "/mnt/files/Mediaserver/Movies:/srv/Media/Movies"
+      - "${FILEBROWSER_PRIVATE_PATH:-/mnt/files/Filebrowser/_private}:/srv/_private"
+      - "${FILEBROWSER_FHDW_PATH:-/mnt/files/Filebrowser/fhdw}:/srv/fhdw"
+      - "${FILEBROWSER_USERS_PATH:-/mnt/files/Filebrowser/users}:/srv/users"
+      - "${MEDIA_ANIME_PATH:-/mnt/files/Mediaserver/Anime}:/srv/Media/Anime"
+      - "${MEDIA_SHOWS_PATH:-/mnt/files/Mediaserver/Shows}:/srv/Media/Shows"
+      - "${MEDIA_MOVIES_PATH:-/mnt/files/Mediaserver/Movies}:/srv/Media/Movies"
       - "./data:/home/filebrowser/data"
       - "./tmp/:/home/filebrowser/tmp/"
     # ports:

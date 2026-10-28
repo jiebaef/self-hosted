@@ -9,11 +9,11 @@ services:
     ports:
       - 8080:80
     environment:
-      - OPENPROJECT_HOST__NAME=openproject.sh-jiebaef.xyz
-      - OPENPROJECT_SECRET_KEY_BASE=secret
-      - OPENPROJECT_HTTPS=false 
+      - OPENPROJECT_HOST__NAME=${OPENPROJECT_HOST_NAME:?OpenProject public hostname required}
+      - OPENPROJECT_SECRET_KEY_BASE=${OPENPROJECT_SECRET_KEY_BASE:?OpenProject secret key required}
+      - OPENPROJECT_HTTPS=${OPENPROJECT_HTTPS:-false}
     volumes:
-      - /mnt/files/docker_data/openproject/pgdat/pgdataa:/var/openproject/pgdata
-      - /mnt/files/docker_data/openproject/assets:/var/openproject/assets
+      - ${OPENPROJECT_DATA_PATH:-/mnt/files/docker_data/openproject}/pgdat/pgdataa:/var/openproject/pgdata
+      - ${OPENPROJECT_DATA_PATH:-/mnt/files/docker_data/openproject}/assets:/var/openproject/assets
     networks:
       - hosting

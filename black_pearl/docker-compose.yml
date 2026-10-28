@@ -8,26 +8,26 @@ services:
       - /dev/net/tun:/dev/net/tun
     restart: unless-stopped
     ports:
-      - ${QBIT_TORRENTING_PORT}:${QBIT_TORRENTING_PORT}/tcp
-      - ${QBIT_TORRENTING_PORT}:${QBIT_TORRENTING_PORT}/udp
-      - ${QBIT_WEBUI_PORT}:${QBIT_WEBUI_PORT}
+      - ${QBIT_TORRENTING_PORT:?torrent port required}:${QBIT_TORRENTING_PORT:?torrent port required}/tcp
+      - ${QBIT_TORRENTING_PORT:?torrent port required}:${QBIT_TORRENTING_PORT:?torrent port required}/udp
+      - ${QBIT_WEBUI_PORT:?qBittorrent web UI port required}:${QBIT_WEBUI_PORT:?qBittorrent web UI port required}
 
-      - ${PROWLARR_WEBUI_PORT}:${PROWLARR_WEBUI_PORT}
-      - ${RADARR_WEBUI_PORT}:${RADARR_WEBUI_PORT}
-      - ${SONARR_WEBUI_PORT}:${SONARR_WEBUI_PORT}
-      - ${BAZARR_WEBUI_PORT}:${BAZARR_WEBUI_PORT}
-      - ${READARR_WEBUI_PORT}:${READARR_WEBUI_PORT}
+      - ${PROWLARR_WEBUI_PORT:?Prowlarr port required}:${PROWLARR_WEBUI_PORT:?Prowlarr port required}
+      - ${RADARR_WEBUI_PORT:?Radarr port required}:${RADARR_WEBUI_PORT:?Radarr port required}
+      - ${SONARR_WEBUI_PORT:?Sonarr port required}:${SONARR_WEBUI_PORT:?Sonarr port required}
+      - ${BAZARR_WEBUI_PORT:?Bazarr port required}:${BAZARR_WEBUI_PORT:?Bazarr port required}
+      - ${READARR_WEBUI_PORT:?Readarr port required}:${READARR_WEBUI_PORT:?Readarr port required}
     volumes:
       - ./config/gluetun:/gluetun
     environment:
-      - TZ=${TZ}
-      - VPN_SERVICE_PROVIDER=${GLUETUN_VPN_SERVICE_PROVIDER}
-      - VPN_TYPE=${GLUETUN_VPN_TYPE}
-      - WIREGUARD_PRIVATE_KEY=${GLUETUN_WIREGUARD_PRIVATE_KEY}
-      - WIREGUARD_PRESHARED_KEY=${GLUETUN_WIREGUARD_PRESHARED_KEY}
-      - WIREGUARD_ADDRESSES=${GLUETUN_WIREGUARD_ADDRESSES}
-      - SERVER_COUNTRIES=${GLUETUN_SERVER_COUNTRIES}
-      - FIREWALL_OUTBOUND_SUBNETS=${GLUETUN_FIREWALL_OUTBOUND_SUBNETS}
+      - TZ=${TZ:?time zone required}
+      - VPN_SERVICE_PROVIDER=${GLUETUN_VPN_SERVICE_PROVIDER:?VPN provider required}
+      - VPN_TYPE=${GLUETUN_VPN_TYPE:?VPN type required}
+      - WIREGUARD_PRIVATE_KEY=${GLUETUN_WIREGUARD_PRIVATE_KEY:?WireGuard private key required}
+      - WIREGUARD_PRESHARED_KEY=${GLUETUN_WIREGUARD_PRESHARED_KEY:?WireGuard preshared key required}
+      - WIREGUARD_ADDRESSES=${GLUETUN_WIREGUARD_ADDRESSES:?WireGuard addresses required}
+      - SERVER_COUNTRIES=${GLUETUN_SERVER_COUNTRIES:?VPN server country required}
+      - FIREWALL_OUTBOUND_SUBNETS=${GLUETUN_FIREWALL_OUTBOUND_SUBNETS:?outbound subnet configuration required}
 
   qbittorrent:
     image: lscr.io/linuxserver/qbittorrent:5.0.1
@@ -35,15 +35,15 @@ services:
     network_mode: "service:gluetun"
     restart: unless-stopped
     environment:
-      - PUID=${PUID}
-      - PGID=${PGID}
-      - TZ=${TZ}
-      - WEBUI_PORT=${QBIT_WEBUI_PORT}
-      - TORRENTING_PORT=${QBIT_TORRENTING_PORT}
+      - PUID=${PUID:?user ID required}
+      - PGID=${PGID:?group ID required}
+      - TZ=${TZ:?time zone required}
+      - WEBUI_PORT=${QBIT_WEBUI_PORT:?qBittorrent web UI port required}
+      - TORRENTING_PORT=${QBIT_TORRENTING_PORT:?torrent port required}
     volumes:
       - ./config/qbittorrent:/config
-      - /mnt/files/Mediaserver:/downloads
-      - /mnt/files/Mediaserver/torrents:/torrents
+      - ${MEDIASERVER_PATH:-/mnt/files/Mediaserver}:/downloads
+      - ${MEDIASERVER_PATH:-/mnt/files/Mediaserver}/torrents:/torrents
     depends_on:
       - gluetun
 

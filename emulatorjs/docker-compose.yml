@@ -8,15 +8,15 @@ services:
     container_name: emulatorjs
     restart: unless-stopped
     ports:
-      - 3000:3000 # file management
-      - 80:80 # gaming
+      - ${EMULATORJS_ADMIN_PORT:-3000}:3000 # file management
+      - ${EMULATORJS_GAME_PORT:-80}:80 # gaming
     environment:
-      - PUID=1000
-      - PGID=1000
-      - TZ=Europe/Berlin
+      - PUID=${PUID:-1000}
+      - PGID=${PGID:-1000}
+      - TZ=${TZ:-Europe/Berlin}
     volumes:
       - ./config/emulatorjs:/config
       # - ./data/emulatorjs:/data
-      - /mnt/files/docker_data/emulatorjs:/data
+      - ${EMULATORJS_DATA_PATH:-/mnt/files/docker_data/emulatorjs}:/data
     networks:
       - hosting

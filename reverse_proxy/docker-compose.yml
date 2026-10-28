@@ -19,9 +19,9 @@ services:
     environment:
       - DB_MYSQL_HOST=nginx-db
       - DB_MYSQL_PORT=3306
-      - DB_MYSQL_USER=${MYSQL_USER}
-      - DB_MYSQL_PASSWORD=${MYSQL_PASSWORD}
-      - DB_MYSQL_NAME=${MYSQL_DATABASE}
+      - DB_MYSQL_USER=${MYSQL_USER:?database user required}
+      - DB_MYSQL_PASSWORD=${MYSQL_PASSWORD:?database password required}
+      - DB_MYSQL_NAME=${MYSQL_DATABASE:?database name required}
     volumes:
       - ./data/nginx/data:/data
       - ./data/nginx/letsencrypt:/etc/letsencrypt
@@ -36,10 +36,10 @@ services:
     container_name: nginx-db
     restart: unless-stopped
     environment:
-      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
-      - MYSQL_DATABASE=${MYSQL_DATABASE}
-      - MYSQL_USER=${MYSQL_USER}
-      - MYSQL_PASSWORD=${MYSQL_PASSWORD}
+      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD:?database root password required}
+      - MYSQL_DATABASE=${MYSQL_DATABASE:?database name required}
+      - MYSQL_USER=${MYSQL_USER:?database user required}
+      - MYSQL_PASSWORD=${MYSQL_PASSWORD:?database password required}
       - MARIADB_AUTO_UPGRADE="1"
     volumes:
       - ./data/mysql:/var/lib/mysql

@@ -10,12 +10,12 @@ services:
     container_name: audiobookshelf
     restart: unless-stopped
     volumes:
-      - /mnt/files/Mediaserver/Audiobooks:/audiobooks
-      - /mnt/files/Mediaserver/Podcasts:/podcasts
+      - ${AUDIOBOOKS_PATH:-/mnt/files/Mediaserver/Audiobooks}:/audiobooks
+      - ${PODCASTS_PATH:-/mnt/files/Mediaserver/Podcasts}:/podcasts
       - ./configs/audiobookshelf:/config
       - ./data/audiobookshelf:/metadata
     environment:
-      - TZ=Europe/Berlin
+      - TZ=${TZ:-Europe/Berlin}
     networks:
       - hosting
       - content_consumption

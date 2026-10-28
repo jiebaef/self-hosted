@@ -21,8 +21,7 @@
 #
 # To install and update paperless with this file, do the following:
 #
-# - Copy this file as 'docker-compose.yml' and the files 'docker-compose.env'
-#   and '.env' into a folder.
+# - Copy this file as 'docker-compose.yml' and copy '.env.example' to '.env'.
 # - Run 'docker compose pull'.
 # - Run 'docker compose up -d'.
 #
@@ -52,9 +51,9 @@ services:
     volumes:
       - ./data/postgres:/var/lib/postgresql/data
     environment:
-      POSTGRES_DB: ${PAPERLESS_DBNAME}
-      POSTGRES_USER: ${PAPERLESS_DBUSER}
-      POSTGRES_PASSWORD: ${PAPERLESS_DBPASS}
+      POSTGRES_DB: ${PAPERLESS_DBNAME:?database name required}
+      POSTGRES_USER: ${PAPERLESS_DBUSER:?database user required}
+      POSTGRES_PASSWORD: ${PAPERLESS_DBPASS:?database password required}
     networks:
       - internal
       - dbs_postgres
@@ -73,38 +72,21 @@ services:
     volumes:
       - ./data/paperless/data:/usr/src/paperless/data
       - ./data/paperless/consume:/usr/src/paperless/consume
-      - /mnt/files/docker_data/paperless/media:/usr/src/paperless/media
-      - /mnt/files/docker_data/paperless/export:/usr/src/paperless/export
-    env_file: docker-compose.env
+      - ${PAPERLESS_MEDIA_PATH:-/mnt/files/docker_data/paperless/media}:/usr/src/paperless/media
+      - ${PAPERLESS_EXPORT_PATH:-/mnt/files/docker_data/paperless/export}:/usr/src/paperless/export
+    env_file: .env
     environment:
       PAPERLESS_REDIS: redis://broker:6379
       PAPERLESS_DBHOST: db
-      PAPERLESS_DBNAME: ${PAPERLESS_DBNAME}
-      PAPERLESS_DBUSER: ${PAPERLESS_DBUSER}
-      PAPERLESS_DBPASS: ${PAPERLESS_DBPASS}
+      PAPERLESS_DBNAME: ${PAPERLESS_DBNAME:?database name required}
+      PAPERLESS_DBUSER: ${PAPERLESS_DBUSER:?database user required}
+      PAPERLESS_DBPASS: ${PAPERLESS_DBPASS:?database password required}
       PAPERLESS_TIKA_ENABLED: 1
       PAPERLESS_TIKA_GOTENBERG_ENDPOINT: http://gotenberg:3000
       PAPERLESS_TIKA_ENDPOINT: http://tika:9998
-      PAPERLESS_APPS: allauth.socialaccount.providers.openid_connect
-      PAPERLESS_SOCIAL_ACCOUNT_SYNC_GROUPS: true
-      PAPERLESS_SOCIALACCOUNT_PROVIDERS: >
-          {
-            "openid_connect": {
-              "APPS": [
-                {
-                  "provider_id": "authentik",
-                  "name": "Authentik",
-                  "client_id": "aT59LxxijMnWVb8UBtSYOLlDFYwfS73dxfTSoXsD",
-                  "secret": "pYOKEz6C4nQY4JahACU2xCu0o1Mkq6ioTuaLsIey5DRJhZXBW9zbEAX4RTSK4hctvy445hGHhM4HgQJDgmkteWSjVyugc9aqtAYoXJWKptwRpnyRc6i7rbv3Mal6gDKP",
-                  "settings": {
-                    "server_url": "https://authentik.sh-jiebaef.xyz/application/o/paperless/.well-known/openid-configuration"
-                  }
-                }
-              ],
-              "OAUTH_PKCE_ENABLED": "True",
-              "SCOPE": [ "openid", "profile", "email", "groups" ]
-            }
-          }
+      PAPERLESS_APPS: ${PAPERLESS_APPS:?configure Paperless authentication apps}
+      PAPERLESS_SOCIAL_ACCOUNT_SYNC_GROUPS: ${PAPERLESS_SOCIAL_ACCOUNT_SYNC_GROUPS:?configure Paperless group sync}
+      PAPERLESS_SOCIALACCOUNT_PROVIDERS: ${PAPERLESS_SOCIALACCOUNT_PROVIDERS:?configure Paperless OIDC provider JSON}
     networks:
       - internal
       - hosting
