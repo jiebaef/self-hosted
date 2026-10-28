@@ -1,0 +1,13 @@
+name: adguardhome
+
+services:
+  adguardhome:
+    image: adguard/adguardhome:latest
+    ports:
+      - 53:53/tcp # plain dns over tcp
+      - 53:53/udp # plain dns over udp
+      - 18080:80/tcp # web interface
+      # - 18080:3000/tcp # web setup interface
+    volumes:
+      - ./data/agh/config:/opt/adguardhome/conf
+      - ./data/agh/work:/opt/adguardhome/work
