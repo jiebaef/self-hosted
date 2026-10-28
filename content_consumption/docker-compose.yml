@@ -6,7 +6,7 @@ networks:
 
 services:
   audiobookshelf:
-    image: ghcr.io/advplyr/audiobookshelf:2.18.1
+    image: ghcr.io/advplyr/audiobookshelf:2.37.0
     container_name: audiobookshelf
     restart: unless-stopped
     volumes:
@@ -20,27 +20,27 @@ services:
       - hosting
       - content_consumption
 
-  kavita:
-    image: lscr.io/linuxserver/kavita:latest
-    container_name: kavita
-    restart: unless-stopped
-    volumes:
-      - ./configs/kavita:/config
-      - /mnt/files/Mediaserver/:/media
-    environment:
-      - PUID=1000
-      - GUID=1000
-      - TZ=Europe/Berlin
-    networks:
-      - hosting
-
-  abs-metadata-provider-1:
-    image: arranhs/abs-tract:latest
-    container_name: abstract
-    restart: unless-stopped
-    ports:
-      - 15555:5555
-    networks:
-      - content_consumption
-    depends_on:
-      - audiobookshelf
+  # kavita:
+  #   image: lscr.io/linuxserver/kavita:0.8.6
+  #   container_name: kavita
+  #   restart: unless-stopped
+  #   volumes:
+  #     - ./configs/kavita:/config
+  #     - /mnt/files/Mediaserver/:/media
+  #   environment:
+  #     - PUID=1000
+  #     - GUID=1000
+  #     - TZ=Europe/Berlin
+  #   networks:
+  #     - hosting
+  #
+  # abs-metadata-provider-1:
+  #   image: arranhs/abs-tract:latest
+  #   container_name: abstract
+  #   restart: unless-stopped
+  #   ports:
+  #     - 15555:5555
+  #   networks:
+  #     - content_consumption
+  #   depends_on:
+  #     - audiobookshelf

@@ -4,32 +4,24 @@ networks:
 
 services:
   filebrowser:
-    image: filebrowser/filebrowser
+    image: gtstef/filebrowser:beta-slim
     container_name: filebrowser
-    restart: unless-stopped
-    ports:
-      - 33334:80
-    # environment:
-    #   - PUID=1000
-    #   - PGID=1000
-    user: 1000:1000
+    environment:
+      FILEBROWSER_CONFIG: "data/config.yaml"
+      FILEBROWSER_ADMIN_PASSWORD: ${ADMIN_PASSWORD}
+      TZ: "Europe/Berlin"
     volumes:
-      - /mnt/files/Mediaserver/Anime:/srv/Anime
-      - /mnt/files/Mediaserver/Movies:/srv/Movies
-      - /mnt/files/Mediaserver/Shows:/srv/Shows
-      - /mnt/files/Filebrowser/${uni}:/srv/${uni}
-      - /mnt/files/Filebrowser/_private:/srv/_private
-      - ./data/torrents:/srv/Torrents
-
-      # - ./config/filebrowser/settings.json:/config/settings.json
-      # - ./data/filebrowser/filebrowser.db:/database/filebrowser.db
-
-      - ./data/filebrowser/database.db:/database.db
-      - ./config/filebrowser/filebrowser.json:/.filebrowser.json
-
-      #
-      # - ./data/filebrowser/database.db:/database.db
-      # - ./data/filebrowser/filebrowser.db:/database/filebrowser.db
-      # - ./data/filebrowser/.filebrowser.json:/.filebrowser.json
+      - "/mnt/files/Filebrowser/_private:/srv/_private"
+      - "/mnt/files/Filebrowser/fhdw:/srv/fhdw"
+      - "/mnt/files/Filebrowser/users:/srv/users"
+      - "/mnt/files/Mediaserver/Anime:/srv/Media/Anime"
+      - "/mnt/files/Mediaserver/Shows:/srv/Media/Shows"
+      - "/mnt/files/Mediaserver/Movies:/srv/Media/Movies"
+      - "./data:/home/filebrowser/data"
+      - "./tmp/:/home/filebrowser/tmp/"
+    # ports:
+    #   - '80:80' # the left 80 is the port **you will use** to access. The right 80 is the container port that **must match the config.yaml**
+    # user: filebrowser
+    restart: unless-stopped
     networks:
       - hosting
