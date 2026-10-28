@@ -4,7 +4,6 @@
 !*/
 
 !.gitignore
-!ENVIRONMENT.md
 
 !*/docker-compose.yml
 
@@ -15,3 +14,6 @@
 !**/.env.example
 docker-compose.env
 !**/docker-compose.env.example
+
+AGENTS.md
+ENVIRONMENT.md
